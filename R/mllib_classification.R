@@ -1,3 +1,4 @@
+# Modified by Renova for compatibility.
 #
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
@@ -322,7 +323,7 @@ setMethod("spark.logit", signature(data = "SparkDataFrame", formula = "formula")
             }
 
             if (!is.null(lowerBoundsOnCoefficients)) {
-              if (class(lowerBoundsOnCoefficients) != "matrix") {
+              if (class(lowerBoundsOnCoefficients)[1L] != "matrix") {
                 stop("lowerBoundsOnCoefficients must be a matrix.")
               }
               row <- nrow(lowerBoundsOnCoefficients)
@@ -331,7 +332,7 @@ setMethod("spark.logit", signature(data = "SparkDataFrame", formula = "formula")
             }
 
             if (!is.null(upperBoundsOnCoefficients)) {
-              if (class(upperBoundsOnCoefficients) != "matrix") {
+              if (class(upperBoundsOnCoefficients)[1L] != "matrix") {
                 stop("upperBoundsOnCoefficients must be a matrix.")
               }
 

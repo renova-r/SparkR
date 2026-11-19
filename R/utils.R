@@ -1,3 +1,4 @@
+# Modified by Renova for compatibility.
 #
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
@@ -116,14 +117,14 @@ isRDD <- function(name, env) {
 #'}
 #' @note hashCode since 1.4.0
 hashCode <- function(key) {
-  if (class(key) == "integer") {
+  if (class(key)[1L] == "integer") {
     as.integer(key[[1]])
-  } else if (class(key) == "numeric") {
+  } else if (class(key)[1L] == "numeric") {
     # Convert the double to long and then calculate the hash code
     rawVec <- writeBin(key[[1]], con = raw())
     intBits <- packBits(rawToBits(rawVec), "integer")
     as.integer(bitwXor(intBits[2], intBits[1]))
-  } else if (class(key) == "character") {
+  } else if (class(key)[1L] == "character") {
     # TODO: SPARK-7839 means we might not have the native library available
     n <- nchar(key)
     if (n == 0) {

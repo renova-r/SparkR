@@ -1,3 +1,4 @@
+# Modified by Renova for compatibility.
 #
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
@@ -579,7 +580,7 @@ read.df <- function(path = NULL, source = NULL, schema = NULL, na.strings = "NA"
   read <- callJMethod(sparkSession, "read")
   read <- callJMethod(read, "format", source)
   if (!is.null(schema)) {
-    if (class(schema) == "structType") {
+    if (class(schema)[1L] == "structType") {
       read <- callJMethod(read, "schema", schema$jobj)
     } else if (is.character(schema)) {
       read <- callJMethod(read, "schema", schema)
@@ -701,7 +702,7 @@ read.stream <- function(source = NULL, schema = NULL, ...) {
   read <- callJMethod(sparkSession, "readStream")
   read <- callJMethod(read, "format", source)
   if (!is.null(schema)) {
-    if (class(schema) == "structType") {
+    if (class(schema)[1L] == "structType") {
       read <- callJMethod(read, "schema", schema$jobj)
     } else if (is.character(schema)) {
       read <- callJMethod(read, "schema", schema)

@@ -1,3 +1,4 @@
+# Modified by Renova for compatibility.
 #
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
@@ -370,7 +371,7 @@ setMethod("colnames<-",
           function(x, value) {
 
             # Check parameter integrity
-            if (class(value) != "character") {
+            if (class(value)[1L] != "character") {
               stop("Invalid column names.")
             }
 
@@ -763,7 +764,7 @@ setMethod("repartition",
           function(x, numPartitions = NULL, col = NULL, ...) {
             if (!is.null(numPartitions) && is.numeric(numPartitions)) {
               # number of partitions and columns both are specified
-              if (!is.null(col) && class(col) == "Column") {
+              if (!is.null(col) && class(col)[1L] == "Column") {
                 cols <- list(col, ...)
                 jcol <- lapply(cols, function(c) { c@jc })
                 sdf <- callJMethod(x@sdf, "repartition", numToInt(numPartitions), jcol)
@@ -771,7 +772,7 @@ setMethod("repartition",
                 # only number of partitions is specified
                 sdf <- callJMethod(x@sdf, "repartition", numToInt(numPartitions))
               }
-            } else if (!is.null(col) && class(col) == "Column") {
+            } else if (!is.null(col) && class(col)[1L] == "Column") {
               # only columns are specified
               cols <- list(col, ...)
               jcol <- lapply(cols, function(c) { c@jc })
@@ -824,7 +825,7 @@ setMethod("repartitionByRange",
           function(x, numPartitions = NULL, col = NULL, ...) {
             if (!is.null(numPartitions) && !is.null(col)) {
               # number of partitions and columns both are specified
-              if (is.numeric(numPartitions) && class(col) == "Column") {
+              if (is.numeric(numPartitions) && class(col)[1L] == "Column") {
                 cols <- list(col, ...)
                 jcol <- lapply(cols, function(c) { c@jc })
                 sdf <- callJMethod(x@sdf, "repartitionByRange", numToInt(numPartitions), jcol)
@@ -834,7 +835,7 @@ setMethod("repartitionByRange",
               }
             } else if (!is.null(col))  {
               # only columns are specified
-              if (class(col) == "Column") {
+              if (class(col)[1L] == "Column") {
                 cols <- list(col, ...)
                 jcol <- lapply(cols, function(c) { c@jc })
                 sdf <- callJMethod(x@sdf, "repartitionByRange", jcol)
@@ -1449,7 +1450,7 @@ setMethod("groupBy",
            signature(x = "SparkDataFrame"),
            function(x, ...) {
              cols <- list(...)
-             if (length(cols) >= 1 && class(cols[[1]]) == "character") {
+             if (length(cols) >= 1 && class(cols[[1]])[1L] == "character") {
                sgd <- callJMethod(x@sdf, "groupBy", cols[[1]], cols[-1])
              } else {
                jcol <- lapply(cols, function(c) { c@jc })
@@ -1919,7 +1920,7 @@ getColumn <- function(x, c) {
 }
 
 setColumn <- function(x, c, value) {
-  if (class(value) != "Column" && !is.null(value)) {
+  if (class(value)[1L] != "Column" && !is.null(value)) {
     if (isAtomicLengthOne(value)) {
       value <- lit(value)
     } else {
@@ -2006,7 +2007,7 @@ setMethod("[", signature(x = "SparkDataFrame"),
             filtered <- if (missing(i)) {
               x
             } else {
-              if (class(i) != "Column") {
+              if (class(i)[1L] != "Column") {
                 stop("Expressions other than filtering predicates are not supported ",
                       "in the first parameter of extract operator [ or subset() method.")
               }
@@ -2144,7 +2145,7 @@ setMethod("select",
           signature(x = "SparkDataFrame", col = "list"),
           function(x, col) {
             cols <- lapply(col, function(c) {
-              if (class(c) == "Column") {
+              if (class(c)[1L] == "Column") {
                 c@jc
               } else {
                 col(c)@jc
@@ -2220,7 +2221,7 @@ setMethod("selectExpr",
 setMethod("withColumn",
           signature(x = "SparkDataFrame", colName = "character"),
           function(x, colName, col) {
-            if (class(col) != "Column") {
+            if (class(col)[1L] != "Column") {
               if (!isAtomicLengthOne(col)) stop("Literal value must be atomic in length of 1")
               col <- lit(col)
             }
@@ -2500,7 +2501,7 @@ setMethod("orderBy",
 setMethod("filter",
           signature(x = "SparkDataFrame", condition = "characterOrColumn"),
           function(x, condition) {
-            if (class(condition) == "Column") {
+            if (class(condition)[1L] == "Column") {
               condition <- condition@jc
             }
             sdf <- callJMethod(x@sdf, "filter", condition)
@@ -2596,7 +2597,7 @@ setMethod("join",
               # this may not fail until the planner checks for Cartesian join later on.
               sdf <- callJMethod(x@sdf, "join", y@sdf)
             } else {
-              if (class(joinExpr) != "Column") stop("joinExpr must be a Column")
+              if (class(joinExpr)[1L] != "Column") stop("joinExpr must be a Column")
               if (is.null(joinType)) {
                 sdf <- callJMethod(x@sdf, "join", y@sdf, joinExpr@jc)
               } else {
@@ -3358,7 +3359,7 @@ setMethod("fillna",
               stop("value should be an integer, numeric, character or named list.")
             }
 
-            if (class(value) == "list") {
+            if (class(value)[1L] == "list") {
               # Check column names in the named list
               colNames <- names(value)
               if (length(colNames) == 0 || !all(colNames != "")) {
@@ -3588,7 +3589,7 @@ setMethod("drop",
           function(x, col) {
             stopifnot(class(col) == "character" || class(col) == "Column")
 
-            if (class(col) == "Column") {
+            if (class(col)[1L] == "Column") {
               sdf <- callJMethod(x@sdf, "drop", col@jc)
             } else {
               sdf <- callJMethod(x@sdf, "drop", as.list(col))
@@ -3653,7 +3654,7 @@ setMethod("histogram",
             }
 
             colname <- col
-            x <- if (class(col) == "character") {
+            x <- if (class(col)[1L] == "character") {
               if (!colname %in% names(df)) {
                 stop("Specified colname does not belong to the given SparkDataFrame.")
               }
@@ -3662,7 +3663,7 @@ setMethod("histogram",
               df <- na.omit(df[, colname, drop = F])
               getColumn(df, colname)
 
-            } else if (class(col) == "Column") {
+            } else if (class(col)[1L] == "Column") {
 
               # The given column needs to be appended to the SparkDataFrame so that we can
               # use method describe() to compute statistics in one single pass. The new
@@ -4053,7 +4054,7 @@ setMethod("cube",
           signature(x = "SparkDataFrame"),
           function(x, ...) {
             cols <- list(...)
-            jcol <- lapply(cols, function(x) if (class(x) == "Column") x@jc else column(x)@jc)
+            jcol <- lapply(cols, function(x) if (class(x)[1L] == "Column") x@jc else column(x)@jc)
             sgd <- callJMethod(x@sdf, "cube", jcol)
             groupedData(sgd)
           })
@@ -4087,7 +4088,7 @@ setMethod("rollup",
           signature(x = "SparkDataFrame"),
           function(x, ...) {
             cols <- list(...)
-            jcol <- lapply(cols, function(x) if (class(x) == "Column") x@jc else column(x)@jc)
+            jcol <- lapply(cols, function(x) if (class(x)[1L] == "Column") x@jc else column(x)@jc)
             sgd <- callJMethod(x@sdf, "rollup", jcol)
             groupedData(sgd)
           })

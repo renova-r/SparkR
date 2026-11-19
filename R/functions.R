@@ -1,3 +1,4 @@
+# Modified by Renova for compatibility.
 #
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
@@ -430,7 +431,7 @@ setMethod("lit", signature("ANY"),
           function(x) {
             jc <- callJStatic("org.apache.spark.sql.functions",
                               "lit",
-                              if (class(x) == "Column") { x@jc } else { x })
+                              if (class(x)[1L] == "Column") { x@jc } else { x })
             column(jc)
           })
 
@@ -792,7 +793,7 @@ setMethod("cov", signature(x = "characterOrColumn"),
 setMethod("covar_samp", signature(col1 = "characterOrColumn", col2 = "characterOrColumn"),
           function(col1, col2) {
             stopifnot(class(col1) == class(col2))
-            if (class(col1) == "Column") {
+            if (class(col1)[1L] == "Column") {
               col1 <- col1@jc
               col2 <- col2@jc
             }
@@ -810,7 +811,7 @@ setMethod("covar_samp", signature(col1 = "characterOrColumn", col2 = "characterO
 setMethod("covar_pop", signature(col1 = "characterOrColumn", col2 = "characterOrColumn"),
           function(col1, col2) {
             stopifnot(class(col1) == class(col2))
-            if (class(col1) == "Column") {
+            if (class(col1)[1L] == "Column") {
               col1 <- col1@jc
               col2 <- col2@jc
             }
@@ -1110,7 +1111,7 @@ setMethod("factorial",
 setMethod("first",
           signature(x = "characterOrColumn"),
           function(x, na.rm = FALSE) {
-            col <- if (class(x) == "Column") {
+            col <- if (class(x)[1L] == "Column") {
               x@jc
             } else {
               x
@@ -1257,7 +1258,7 @@ setMethod("kurtosis",
 setMethod("last",
           signature(x = "characterOrColumn"),
           function(x, na.rm = FALSE) {
-            col <- if (class(x) == "Column") {
+            col <- if (class(x)[1L] == "Column") {
               x@jc
             } else {
               x
@@ -1594,13 +1595,13 @@ setMethod("quarter",
 setMethod("percentile_approx",
           signature(x = "characterOrColumn", percentage = "numericOrColumn"),
           function(x, percentage, accuracy = 10000) {
-            col <- if (class(x) == "Column") {
+            col <- if (class(x)[1L] == "Column") {
               x@jc
             } else {
               column(x)@jc
             }
 
-            percentage <- if (class(percentage) == "Column") {
+            percentage <- if (class(percentage)[1L] == "Column") {
               percentage@jc
             } else if (length(percentage) > 1) {
               do.call(create_array, lapply(percentage, lit))@jc
@@ -1608,7 +1609,7 @@ setMethod("percentile_approx",
               lit(percentage)@jc
             }
 
-            accuracy <- if (class(accuracy) == "Column") {
+            accuracy <- if (class(accuracy)[1L] == "Column") {
               accuracy@jc
             } else {
               lit(as.integer(accuracy))@jc
@@ -1901,7 +1902,7 @@ setMethod("stddev_samp",
 setMethod("struct",
           signature(x = "characterOrColumn"),
           function(x, ...) {
-            if (class(x) == "Column") {
+            if (class(x)[1L] == "Column") {
               jcols <- lapply(list(x, ...), function(x) { x@jc })
               jc <- callJStatic("org.apache.spark.sql.functions", "struct", jcols)
             } else {
@@ -2320,7 +2321,7 @@ setMethod("year",
 #' @note atan2 since 1.5.0
 setMethod("atan2", signature(y = "Column"),
           function(y, x) {
-            if (class(x) == "Column") {
+            if (class(x)[1L] == "Column") {
               x <- x@jc
             }
             jc <- callJStatic("org.apache.spark.sql.functions", "atan2", y@jc, x)
@@ -2344,7 +2345,7 @@ setMethod("atan2", signature(y = "Column"),
 #' @note datediff since 1.5.0
 setMethod("datediff", signature(y = "Column"),
           function(y, x) {
-            if (class(x) == "Column") {
+            if (class(x)[1L] == "Column") {
               x <- x@jc
             }
             jc <- callJStatic("org.apache.spark.sql.functions", "datediff", y@jc, x)
@@ -2359,7 +2360,7 @@ setMethod("datediff", signature(y = "Column"),
 #' @note hypot since 1.4.0
 setMethod("hypot", signature(y = "Column"),
           function(y, x) {
-            if (class(x) == "Column") {
+            if (class(x)[1L] == "Column") {
               x <- x@jc
             }
             jc <- callJStatic("org.apache.spark.sql.functions", "hypot", y@jc, x)
@@ -2381,7 +2382,7 @@ setMethod("hypot", signature(y = "Column"),
 #' @note levenshtein since 1.5.0
 setMethod("levenshtein", signature(y = "Column"),
           function(y, x) {
-            if (class(x) == "Column") {
+            if (class(x)[1L] == "Column") {
               x <- x@jc
             }
             jc <- callJStatic("org.apache.spark.sql.functions", "levenshtein", y@jc, x)
@@ -2400,7 +2401,7 @@ setMethod("levenshtein", signature(y = "Column"),
 #' @note months_between since 1.5.0
 setMethod("months_between", signature(y = "Column"),
           function(y, x, roundOff = NULL) {
-            if (class(x) == "Column") {
+            if (class(x)[1L] == "Column") {
               x <- x@jc
             }
             jc <- if (is.null(roundOff)) {
@@ -2422,7 +2423,7 @@ setMethod("months_between", signature(y = "Column"),
 #' @note nanvl since 1.5.0
 setMethod("nanvl", signature(y = "Column"),
           function(y, x) {
-            if (class(x) == "Column") {
+            if (class(x)[1L] == "Column") {
               x <- x@jc
             }
             jc <- callJStatic("org.apache.spark.sql.functions", "nanvl", y@jc, x)
@@ -2438,7 +2439,7 @@ setMethod("nanvl", signature(y = "Column"),
 #' @note pmod since 1.5.0
 setMethod("pmod", signature(y = "Column"),
           function(y, x) {
-            if (class(x) == "Column") {
+            if (class(x)[1L] == "Column") {
               x <- x@jc
             }
             jc <- callJStatic("org.apache.spark.sql.functions", "pmod", y@jc, x)
@@ -2609,7 +2610,7 @@ setMethod("from_json", signature(x = "Column", schema = "characterOrstructTypeOr
           function(x, schema, as.json.array = FALSE, ...) {
             if (is.character(schema)) {
               jschema <- structType(schema)$jobj
-            } else if (class(schema) == "structType") {
+            } else if (class(schema)[1L] == "structType") {
               jschema <- schema$jobj
             } else {
               jschema <- schema@jc
@@ -2620,7 +2621,7 @@ setMethod("from_json", signature(x = "Column", schema = "characterOrstructTypeOr
               # R side has 'as.json.array' option to indicate if the schema should be
               # treated as struct or element type of array in order to make it more
               # R-friendly.
-              if (class(schema) == "Column") {
+              if (class(schema)[1L] == "Column") {
                 jschema <- callJStatic("org.apache.spark.sql.api.r.SQLUtils",
                                        "createArrayType",
                                        jschema)
@@ -2651,7 +2652,7 @@ setMethod("from_json", signature(x = "Column", schema = "characterOrstructTypeOr
 #' @note schema_of_json since 3.0.0
 setMethod("schema_of_json", signature(x = "characterOrColumn"),
           function(x, ...) {
-            if (class(x) == "character") {
+            if (class(x)[1L] == "character") {
               col <- callJStatic("org.apache.spark.sql.functions", "lit", x)
             } else {
               col <- x@jc
@@ -2682,7 +2683,7 @@ setMethod("schema_of_json", signature(x = "characterOrColumn"),
 #' @note from_csv since 3.0.0
 setMethod("from_csv", signature(x = "Column", schema = "characterOrstructTypeOrColumn"),
           function(x, schema, ...) {
-            if (class(schema) == "structType") {
+            if (class(schema)[1L] == "structType") {
               schema <- callJMethod(schema$jobj, "toDDL")
             }
 
@@ -2712,7 +2713,7 @@ setMethod("from_csv", signature(x = "Column", schema = "characterOrstructTypeOrC
 #' @note schema_of_csv since 3.0.0
 setMethod("schema_of_csv", signature(x = "characterOrColumn"),
           function(x, ...) {
-            if (class(x) == "character") {
+            if (class(x)[1L] == "character") {
               col <- callJStatic("org.apache.spark.sql.functions", "lit", x)
             } else {
               col <- x@jc
@@ -3341,7 +3342,7 @@ setMethod("unix_timestamp", signature(x = "Column", format = "character"),
 setMethod("when", signature(condition = "Column", value = "ANY"),
           function(condition, value) {
               condition <- condition@jc
-              value <- if (class(value) == "Column") { value@jc } else { value }
+              value <- if (class(value)[1L] == "Column") { value@jc } else { value }
               jc <- callJStatic("org.apache.spark.sql.functions", "when", condition, value)
               column(jc)
           })
@@ -3360,8 +3361,8 @@ setMethod("ifelse",
           signature(test = "Column", yes = "ANY", no = "ANY"),
           function(test, yes, no) {
               test <- test@jc
-              yes <- if (class(yes) == "Column") { yes@jc } else { yes }
-              no <- if (class(no) == "Column") { no@jc } else { no }
+              yes <- if (class(yes)[1L] == "Column") { yes@jc } else { yes }
+              no <- if (class(no)[1L] == "Column") { no@jc } else { no }
               jc <- callJMethod(callJStatic("org.apache.spark.sql.functions",
                                             "when",
                                             test, yes),
@@ -3420,7 +3421,7 @@ setMethod("dense_rank",
 setMethod("lag",
           signature(x = "characterOrColumn"),
           function(x, offset = 1, defaultValue = NULL) {
-            col <- if (class(x) == "Column") {
+            col <- if (class(x)[1L] == "Column") {
               x@jc
             } else {
               x
@@ -3444,7 +3445,7 @@ setMethod("lag",
 setMethod("lead",
           signature(x = "characterOrColumn", offset = "numeric", defaultValue = "ANY"),
           function(x, offset = 1, defaultValue = NULL) {
-            col <- if (class(x) == "Column") {
+            col <- if (class(x)[1L] == "Column") {
               x@jc
             } else {
               x
@@ -3646,7 +3647,7 @@ create_lambda <- function(fun) {
 #' @return a \code{Column} representing name applied to cols with funs
 invoke_higher_order_function <- function(name, cols, funs) {
   as_jexpr <- function(x) {
-    if (class(x) == "character") {
+    if (class(x)[1L] == "character") {
       x <- column(x)
     }
     callJMethod(x@jc, "expr")
@@ -3874,7 +3875,7 @@ setMethod("array_remove",
 setMethod("array_repeat",
           signature(x = "Column", count = "numericOrColumn"),
           function(x, count) {
-            if (class(count) == "Column") {
+            if (class(count)[1L] == "Column") {
               count <- count@jc
             } else {
               count <- as.integer(count)

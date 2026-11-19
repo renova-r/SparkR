@@ -1,3 +1,4 @@
+# Modified by Renova for compatibility.
 #
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
@@ -72,7 +73,7 @@ setMethod("partitionBy",
           function(x, col, ...) {
             stopifnot(class(col) %in% c("character", "Column"))
 
-            if (class(col) == "character") {
+            if (class(col)[1L] == "character") {
               windowSpec(callJMethod(x@sws, "partitionBy", col, list(...)))
             } else {
               jcols <- lapply(list(col, ...), function(c) {

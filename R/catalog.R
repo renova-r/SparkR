@@ -1,3 +1,4 @@
+# Modified by Renova for compatibility.
 #
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
@@ -86,7 +87,7 @@ createTable <- function(tableName, path = NULL, source = NULL, schema = NULL, ..
   catalog <- callJMethod(sparkSession, "catalog")
   if (is.null(schema)) {
     sdf <- callJMethod(catalog, "createTable", tableName, source, options)
-  } else if (class(schema) == "structType") {
+  } else if (class(schema)[1L] == "structType") {
     sdf <- callJMethod(catalog, "createTable", tableName, source, schema$jobj, options)
   } else {
     stop("schema must be a structType.")
@@ -178,7 +179,7 @@ clearCache <- function() {
 #' @note dropTempTable since 1.4.0
 dropTempTable <- function(tableName) {
   .Deprecated("dropTempView", old = "dropTempTable")
-  if (class(tableName) != "character") {
+  if (class(tableName)[1L] != "character") {
     stop("tableName must be a string.")
   }
   dropTempView(tableName)
@@ -203,7 +204,7 @@ dropTempTable <- function(tableName) {
 #' @note since 2.0.0
 dropTempView <- function(viewName) {
   sparkSession <- getSparkSession()
-  if (class(viewName) != "character") {
+  if (class(viewName)[1L] != "character") {
     stop("viewName must be a string.")
   }
   catalog <- callJMethod(sparkSession, "catalog")
@@ -286,7 +287,7 @@ currentDatabase <- function() {
 #' @note since 2.2.0
 setCurrentDatabase <- function(databaseName) {
   sparkSession <- getSparkSession()
-  if (class(databaseName) != "character") {
+  if (class(databaseName)[1L] != "character") {
     stop("databaseName must be a string.")
   }
   catalog <- callJMethod(sparkSession, "catalog")
@@ -331,7 +332,7 @@ listDatabases <- function() {
 #' @note since 2.2.0
 listTables <- function(databaseName = NULL) {
   sparkSession <- getSparkSession()
-  if (!is.null(databaseName) && class(databaseName) != "character") {
+  if (!is.null(databaseName) && class(databaseName)[1L] != "character") {
     stop("databaseName must be a string.")
   }
   catalog <- callJMethod(sparkSession, "catalog")
@@ -362,7 +363,7 @@ listTables <- function(databaseName = NULL) {
 #' @note since 2.2.0
 listColumns <- function(tableName, databaseName = NULL) {
   sparkSession <- getSparkSession()
-  if (!is.null(databaseName) && class(databaseName) != "character") {
+  if (!is.null(databaseName) && class(databaseName)[1L] != "character") {
     stop("databaseName must be a string.")
   }
   catalog <- callJMethod(sparkSession, "catalog")
@@ -391,7 +392,7 @@ listColumns <- function(tableName, databaseName = NULL) {
 #' @note since 2.2.0
 listFunctions <- function(databaseName = NULL) {
   sparkSession <- getSparkSession()
-  if (!is.null(databaseName) && class(databaseName) != "character") {
+  if (!is.null(databaseName) && class(databaseName)[1L] != "character") {
     stop("databaseName must be a string.")
   }
   catalog <- callJMethod(sparkSession, "catalog")

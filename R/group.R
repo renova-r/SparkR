@@ -1,3 +1,4 @@
+# Modified by Renova for compatibility.
 #
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
@@ -99,7 +100,7 @@ setMethod("agg",
             if (is.character(cols[[1]])) {
               cols <- varargsToEnv(...)
               sdf <- callJMethod(x@sgd, "agg", cols)
-            } else if (class(cols[[1]]) == "Column") {
+            } else if (class(cols[[1]])[1L] == "Column") {
               ns <- names(cols)
               if (!is.null(ns)) {
                 for (n in ns) {
@@ -252,6 +253,6 @@ gapplyInternal <- function(x, func, schema) {
            serialize(cleanClosure(func), connection = NULL),
            packageNamesArr,
            broadcastArr,
-           if (class(schema) == "structType") { schema$jobj } else { NULL })
+           if (class(schema)[1L] == "structType") { schema$jobj } else { NULL })
   dataFrame(sdf)
 }

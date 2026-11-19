@@ -1,3 +1,4 @@
+# Modified by Renova for compatibility.
 #
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
@@ -85,7 +86,7 @@ createOperator <- function(op) {
                   callJMethod(e1@jc, operators[[op]])
                 }
               } else {
-                if (class(e2) == "Column") {
+                if (class(e2)[1L] == "Column") {
                   e2 <- e2@jc
                 }
                 if (op == "^") {
@@ -110,7 +111,7 @@ createColumnFunction2 <- function(name) {
   setMethod(name,
             signature(x = "Column"),
             function(x, data) {
-              if (class(data) == "Column") {
+              if (class(data)[1L] == "Column") {
                 data <- data@jc
               }
               jc <- callJMethod(x@jc, name, data)
@@ -306,7 +307,7 @@ setMethod("%in%",
 setMethod("otherwise",
           signature(x = "Column", value = "ANY"),
           function(x, value) {
-            value <- if (class(value) == "Column") { value@jc } else { value }
+            value <- if (class(value)[1L] == "Column") { value@jc } else { value }
             jc <- callJMethod(x@jc, "otherwise", value)
             column(jc)
           })
@@ -340,7 +341,7 @@ setMethod("otherwise",
 setMethod("%<=>%",
           signature(x = "Column", value = "ANY"),
           function(x, value) {
-            value <- if (class(value) == "Column") { value@jc } else { value }
+            value <- if (class(value)[1L] == "Column") { value@jc } else { value }
             jc <- callJMethod(x@jc, "eqNullSafe", value)
             column(jc)
           })

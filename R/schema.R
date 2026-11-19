@@ -1,3 +1,4 @@
+# Modified by Renova for compatibility.
 #
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
@@ -206,13 +207,13 @@ checkType <- function(type) {
 #' @param nullable A logical vector indicating whether or not the field is nullable
 #' @rdname structField
 structField.character <- function(x, type, nullable = TRUE, ...) {
-  if (class(x) != "character") {
+  if (class(x)[1L] != "character") {
     stop("Field name must be a string.")
   }
-  if (class(type) != "character") {
+  if (class(type)[1L] != "character") {
     stop("Field type must be a string.")
   }
-  if (class(nullable) != "logical") {
+  if (class(nullable)[1L] != "logical") {
     stop("nullable must be either TRUE or FALSE")
   }
 

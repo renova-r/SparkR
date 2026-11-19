@@ -1,3 +1,4 @@
+# Modified by Renova for compatibility.
 #
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
@@ -226,7 +227,9 @@ writeSerializeInArrow <- function(conn, df) {
     # There looks no way to send each batch in streaming format via socket
     # connection. See ARROW-4512.
     # So, it writes the whole Arrow streaming-formatted binary at once for now.
-    writeRaw(conn, arrow::write_arrow(df, raw()))
+    # write_to_raw() returns the Arrow IPC stream-format bytes as a raw vector,
+    # which is what write_arrow(df, raw()) produced before arrow removed it.
+    writeRaw(conn, arrow::write_to_raw(df))
   } else {
     stop("'arrow' package should be installed.")
   }
