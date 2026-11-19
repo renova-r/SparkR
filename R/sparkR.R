@@ -432,16 +432,16 @@ sparkR.session <- function(
     assign(".sparkRsession", sparkSession, envir = .sparkREnv)
   }
 
-  # Check if version number of SparkSession matches version number of SparkR package
+  # Match the SparkSession against the upstream Spark version.
   jvmVersion <- callJMethod(sparkSession, "version")
   # Remove -SNAPSHOT from jvm versions
   jvmVersionStrip <- gsub("-SNAPSHOT", "", jvmVersion, fixed = TRUE)
-  rPackageVersion <- paste0(packageVersion("SparkR"))
+  expectedVersion <- sparkCoreVersion()
 
-  if (jvmVersionStrip != rPackageVersion) {
+  if (jvmVersionStrip != expectedVersion) {
     warning("Version mismatch between Spark JVM and SparkR package. ",
             "JVM version was ", jvmVersion,
-            ", while R package version was ", rPackageVersion)
+            ", while SparkR expects ", expectedVersion)
   }
 
   sparkSession

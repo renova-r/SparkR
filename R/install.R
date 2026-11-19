@@ -77,7 +77,7 @@ install.spark <- function(hadoopVersion = "2.7", mirrorUrl = NULL,
     return(invisible(sparkHome))
   }
 
-  version <- paste0("spark-", packageVersion("SparkR"))
+  version <- paste0("spark-", sparkCoreVersion())
   hadoopVersion <- tolower(hadoopVersion)
   hadoopVersionName <- hadoopVersionName(hadoopVersion)
   packageName <- paste(version, "bin", hadoopVersionName, sep = "-")
@@ -177,7 +177,7 @@ robustDownloadTar <- function(mirrorUrl, version, hadoopVersion, packageName, pa
 
   # step 2: use url suggested from apache website
   message("Looking for preferred site from apache website...")
-  mirrorUrl <- getPreferredMirror(version, packageName)
+  mirrorUrl <- tryCatch(getPreferredMirror(version, packageName), error = function(e) NULL)
   if (!is.null(mirrorUrl)) {
     success <- directDownloadTar(mirrorUrl, version, hadoopVersion,
                                    packageName, packageLocalPath)
@@ -204,12 +204,12 @@ robustDownloadTar <- function(mirrorUrl, version, hadoopVersion, packageName, pa
 }
 
 getPreferredMirror <- function(version, packageName) {
-  jsonUrl <- paste0("http://www.apache.org/dyn/closer.cgi?path=",
+  jsonUrl <- paste0("https://www.apache.org/dyn/closer.lua?path=",
                         file.path("spark", version, packageName),
                         ".tgz&as_json=1")
-  textLines <- readLines(jsonUrl, warn = FALSE)
-  rowNum <- grep('"preferred"', textLines, fixed = TRUE)
-  linePreferred <- textLines[rowNum]
+  textLines <- suppressWarnings(readLines(jsonUrl, warn = FALSE))
+  linePreferred <- grep('"preferred"', textLines, fixed = TRUE, value = TRUE)[1L]
+  if (is.na(linePreferred)) return(NULL)
   matchInfo <- regexpr('"[A-Za-z][A-Za-z0-9+-.]*://.+"', linePreferred)
   if (matchInfo != -1) {
     startPos <- matchInfo + 1
@@ -245,7 +245,12 @@ downloadUrl <- function(remotePath, localPath) {
 }
 
 defaultMirrorUrl <- function() {
-  "http://www-us.apache.org/dist/spark"
+  "https://archive.apache.org/dist/spark"
+}
+
+sparkCoreVersion <- function() {
+  version <- utils::packageDescription("SparkR", fields = "Config/SparkR/CoreVersion")
+  if (is.na(version)) as.character(utils::packageVersion("SparkR")) else version
 }
 
 hadoopVersionName <- function(hadoopVersion) {
@@ -308,7 +313,7 @@ installInstruction <- function(mode) {
            "- If not, you may run install.spark function to do the job. ",
            "Please make sure the Spark and the Hadoop versions ",
            "match the versions on the cluster. ",
-           "SparkR package is compatible with Spark ", packageVersion("SparkR"), ".",
+           "SparkR package is compatible with Spark ", sparkCoreVersion(), ".",
            "If you need further help, ",
            "contact the administrators of the cluster.")
   } else {
